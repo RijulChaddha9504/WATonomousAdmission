@@ -13,22 +13,27 @@ endif()
 # Search for dependencies required for building this package
 find_package(ament_cmake REQUIRED) # ROS2 build tool
 find_package(rclcpp REQUIRED)      # ROS2 C++ package
+find_package(nav_msgs REQUIRED)    # ✅ For OccupancyGrid
+find_package(std_msgs REQUIRED)    # ✅ In case you need std_msgs
 
 # Compiles source files into a library
-# A library is not executed, instead other executables can link
-# against it to access defined methods and classes.
-# We build a library so that the methods defined can be used by
-# both the unit test and ROS2 node executables.
 add_library(planner_lib
   src/planner_core.cpp)
+
 # Indicate to compiler where to search for header files
 target_include_directories(planner_lib
   PUBLIC include)
+
 # Add ROS2 dependencies required by package
-ament_target_dependencies(planner_lib rclcpp)
+ament_target_dependencies(planner_lib
+  rclcpp
+  nav_msgs   # ✅ Added here
+  std_msgs   # ✅ Added here
+)
 
 # Create ROS2 node executable from source files
 add_executable(planner_node src/planner_node.cpp)
+
 # Link to the previously built library to access planner classes and methods
 target_link_libraries(planner_node planner_lib)
 
